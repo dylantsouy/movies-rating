@@ -135,7 +135,7 @@ const useMediaData = (mediaType: MediaType) => {
 };
 
 const Home = () => {
-  const [mediaType, setMediaType] = useState<MediaType>('movie');
+  const [mediaType] = useState<MediaType>('movie');
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -146,10 +146,6 @@ const Home = () => {
 
   const { data: genres } = useGenres(mediaType);
   const { sections, topRated, popular, upcoming, nowPlaying, isLoading } = useMediaData(mediaType);
-
-  const toggleMediaType = () => {
-    setMediaType((prev) => (prev === 'movie' ? 'tv' : 'movie'));
-  };
 
   const openDetail = (item: MediaItem) => {
     setSelectedItem(item);
