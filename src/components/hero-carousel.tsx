@@ -1,13 +1,15 @@
 'use client';
 
+import Link from 'next/link';
 import { Star } from 'lucide-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
+  CarouselItem
+  // CarouselNext,
+  // CarouselPrevious
 } from '@/components/ui/carousel';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original';
@@ -34,12 +36,12 @@ interface Genre {
 }
 
 interface HeroCarouselProps {
-  onItemClick: (item: MediaItem) => void;
   items: MediaItem[];
   genres: Genre[] | undefined;
+  mediaType: 'movie' | 'tv';
 }
 
-const HeroCarousel = ({ onItemClick, items, genres }: HeroCarouselProps) => {
+const HeroCarousel = ({ items, genres, mediaType }: HeroCarouselProps) => {
   const getGenreNames = (genreIds: number[]) => {
     if (!genres) return [];
 
@@ -47,7 +49,15 @@ const HeroCarousel = ({ onItemClick, items, genres }: HeroCarouselProps) => {
   };
 
   return (
-    <Carousel opts={{ align: 'start', loop: true }} className='w-full'>
+    <Carousel
+      plugins={[
+        Autoplay({
+          delay: 10000
+        })
+      ]}
+      opts={{ align: 'start', loop: true }}
+      className='w-full'
+    >
       <CarouselContent>
         {items.slice(0, 5).map((item) => (
           <CarouselItem key={item.id} className='relative'>
@@ -60,7 +70,7 @@ const HeroCarousel = ({ onItemClick, items, genres }: HeroCarouselProps) => {
               <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent' />
 
               <div className='absolute left-18 top-1/2 -translate-y-1/2 z-30 max-w-[300px] space-y-3 p-4'>
-                <div className='w-[80px] h-[80px] bg-zinc-800 rounded-[1rem] shadow-2xl overflow-hidden border-[2px]'>
+                <div className='w-[110px] h-[80px] bg-zinc-800 rounded-[1rem] shadow-2xl overflow-hidden border-[2px]'>
                   <img
                     src={`${IMAGE_BASE_URL}${item?.backdrop_path}`}
                     alt='Top Game Demo'
@@ -94,21 +104,19 @@ const HeroCarousel = ({ onItemClick, items, genres }: HeroCarouselProps) => {
                   </span>
                 </div>
                 <div className='flex flex-col gap-2'>
-                  <button
-                    className='bg-white text-black px-4 py-2 rounded font-semibold w-fit cursor-pointer hover:bg-gray-100 transition-colors'
-                    onClick={() => onItemClick(item)}
-                    onKeyDown={(e) => e.key === 'Enter' && onItemClick(item)}
-                  >
-                    📱 See Details
-                  </button>
+                  <Link href={`/detail/${mediaType}/${item.id}`}>
+                    <div className='bg-white text-black px-4 py-2 rounded font-semibold w-fit cursor-pointer hover:bg-gray-100 transition-colors'>
+                      🍿 See Details
+                    </div>
+                  </Link>
                 </div>
               </div>
             </div>
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious className='left-4 bg-black/70 border-white/20 text-white hover:bg-black/90 hover:text-white hover:border-white/40 backdrop-blur-sm z-40' />
-      <CarouselNext className='right-4 bg-black/70 border-white/20 text-white hover:bg-black/90 hover:text-white hover:border-white/40 backdrop-blur-sm z-40' />
+      {/* <CarouselPrevious className='left-4 bg-black/70 border-white/20 text-white hover:bg-black/90 hover:text-white hover:border-white/40 backdrop-blur-sm z-40' /> */}
+      {/* <CarouselNext className='right-4 bg-black/70 border-white/20 text-white hover:bg-black/90 hover:text-white hover:border-white/40 backdrop-blur-sm z-40' /> */}
     </Carousel>
   );
 };

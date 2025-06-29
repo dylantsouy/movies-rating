@@ -5,7 +5,6 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { Star, Calendar, TrendingUp, Clapperboard } from 'lucide-react';
 
-import MovieDetail from '@/components/movie-detail';
 import LoadingSkeleton from '@/components/loading-skeleton';
 import HeroCarousel from '@/components/hero-carousel';
 import MediaSection from '@/components/media-section';
@@ -56,6 +55,11 @@ const buildApiUrl = (mediaType: MediaType, endpoint: string): string => {
   return `${TMDB_BASE_URL}/${mediaType}/${endpoint}?api_key=${apiKey}&language=en-US&page=1&region=US`;
 };
 
+const buildTrendingUrl = (mediaType: MediaType, timeWindow: 'day' | 'week' = 'week'): string => {
+  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+  return `${TMDB_BASE_URL}/trending/${mediaType}/${timeWindow}?api_key=${apiKey}&language=en-US&page=1`;
+};
+
 const useGenres = (mediaType: MediaType) => {
   return useQuery<Genre[]>({
     queryKey: ['genres', mediaType],
@@ -69,6 +73,19 @@ const useGenres = (mediaType: MediaType) => {
     },
     staleTime: 1000 * 60 * 60
   });
+};
+
+const useHeroData = (mediaType: MediaType) => {
+  const trendingQuery = useQuery({
+    queryKey: ['trending', mediaType],
+    queryFn: () => fetchTMDB(buildTrendingUrl(mediaType, 'week')),
+    staleTime: 1000 * 60 * 60
+  });
+
+  return {
+    heroData: trendingQuery.data,
+    isLoading: trendingQuery.isLoading
+  };
 };
 
 const useMediaData = (mediaType: MediaType) => {
@@ -135,9 +152,7 @@ const useMediaData = (mediaType: MediaType) => {
 };
 
 const Home = () => {
-  const [mediaType] = useState<MediaType>('movie');
-  const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [mediaType, setMediaType] = useState<MediaType>('movie');
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -145,23 +160,23 @@ const Home = () => {
   }, []);
 
   const { data: genres } = useGenres(mediaType);
+  const { heroData, isLoading: heroLoading } = useHeroData(mediaType);
   const { sections, topRated, popular, upcoming, nowPlaying, isLoading } = useMediaData(mediaType);
 
-  const openDetail = (item: MediaItem) => {
-    setSelectedItem(item);
-    setIsDetailOpen(true);
+  const toggleMediaType = () => {
+    setMediaType((prev) => (prev === 'movie' ? 'tv' : 'movie'));
   };
 
-  if (!isMounted || isLoading) {
+  if (!isMounted || isLoading || heroLoading) {
     return <LoadingSkeleton />;
   }
 
   return (
     <div className='bg-black text-white min-h-screen'>
       <div className='relative w-full'>
-        {topRated && topRated.length > 0 && (
+        {heroData && heroData.length > 0 && (
           <div className='relative'>
-            <HeroCarousel items={topRated} genres={genres} onItemClick={openDetail} />
+            <HeroCarousel items={heroData} genres={genres} mediaType={mediaType} />
             <div className='absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none' />
           </div>
         )}
@@ -172,8 +187,8 @@ const Home = () => {
               title='Top 10'
               items={popular}
               genres={genres}
-              onItemClick={openDetail}
               icon={<TrendingUp className='w-4 h-4' />}
+              mediaType={mediaType}
             />
           </div>
         </div>
@@ -184,33 +199,24 @@ const Home = () => {
           title={sections[2].title}
           items={upcoming}
           genres={genres}
-          onItemClick={openDetail}
           icon={sections[2].icon}
+          mediaType={mediaType}
         />
         <MediaSection
           title={sections[3].title}
           items={nowPlaying}
           genres={genres}
-          onItemClick={openDetail}
           icon={sections[3].icon}
+          mediaType={mediaType}
         />
         <MediaSection
           title={sections[0].title}
           items={topRated}
           genres={genres}
-          onItemClick={openDetail}
           icon={sections[0].icon}
+          mediaType={mediaType}
         />
       </div>
-
-      {selectedItem && (
-        <MovieDetail
-          item={selectedItem}
-          open={isDetailOpen}
-          onOpenChange={setIsDetailOpen}
-          genres={genres ?? []}
-        />
-      )}
     </div>
   );
 };

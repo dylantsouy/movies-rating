@@ -3,8 +3,6 @@ export interface MediaItem {
   id: number;
   title?: string;
   name?: string;
-  original_title?: string;
-  original_name?: string;
   backdrop_path?: string;
   poster_path?: string;
   genre_ids: number[];
@@ -13,9 +11,11 @@ export interface MediaItem {
   vote_count: number;
   release_date?: string;
   first_air_date?: string;
+  original_title?: string;
+  original_name?: string;
   overview?: string;
   runtime?: number;
-  character?: string;
+  genres?: { id: number; name: string }[];
 }
 
 // 電影詳情擴展
@@ -80,6 +80,7 @@ export interface CastCredit {
   vote_average?: number;
   vote_count?: number;
   overview?: string;
+  media_type: string;
 }
 
 // 演員所有作品
