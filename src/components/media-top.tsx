@@ -96,9 +96,7 @@ const MediaTop = ({ title, items, genres, icon, mediaType }: MediaSectionProps) 
                           <span>{item.vote_average.toFixed(1)}</span>
                         </div>
                         <span>•</span>
-                        <span>
-                          {item.release_date?.slice(0, 4) ?? item.first_air_date?.slice(0, 4)}
-                        </span>
+                        <span>{item.release_date ?? item.first_air_date}</span>
                       </div>
                     </div>
 

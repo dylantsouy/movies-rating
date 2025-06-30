@@ -52,6 +52,10 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
     queryFn: fetchCredits
   });
 
+  const movieCredits = creditsQuery.data?.filter((credit) => credit.media_type === 'movie') ?? [];
+
+  const tvCredits = creditsQuery.data?.filter((credit) => credit.media_type === 'tv') ?? [];
+
   const formatBirthDate = (birthday?: string) => {
     if (!birthday) return null;
     const birthDate = new Date(birthday);
@@ -125,52 +129,86 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
 
         <div className='space-y-4'>
-          <h2 className='text-2xl font-bold text-white'>Known For</h2>
-          {creditsQuery.data && creditsQuery.data.length > 0 ? (
-            <Carousel
-              opts={{
-                align: 'start',
-                slidesToScroll: 2
-              }}
-              className='w-full'
-            >
-              <CarouselContent className='-ml-2 md:-ml-4'>
-                {creditsQuery.data.map((credit, index) => (
-                  <CarouselItem
-                    key={`${credit.id}-${index}`}
-                    className='basis-auto md:basis-1/6 lg:basis-1/8'
-                  >
-                    <Link href={`/detail/${credit.media_type}/${credit.id}`}>
-                      <div className='group relative aspect-[3/4] rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50'>
-                        {credit.poster_path ? (
-                          <Image
-                            src={`https://image.tmdb.org/t/p/w500${credit.poster_path}`}
-                            alt={credit.title ?? credit.name ?? 'Poster'}
-                            fill
-                            className='object-cover'
-                          />
-                        ) : (
-                          <div className='bg-gray-800 w-full h-full flex items-center justify-center'>
-                            <span className='text-gray-500 text-sm'>No Photo</span>
+          {/* Movies Section */}
+          {movieCredits.length > 0 && (
+            <div className='space-y-4 pb-10'>
+              <h2 className='text-2xl font-bold text-white'>Movies</h2>
+              <Carousel opts={{ align: 'start', slidesToScroll: 2 }} className='w-full'>
+                <CarouselContent className='-ml-2 md:-ml-4'>
+                  {movieCredits.map((credit, index) => (
+                    <CarouselItem
+                      key={`${credit.id}-${index}-movie`}
+                      className='basis-auto md:basis-1/6 lg:basis-1/8'
+                    >
+                      <Link href={`/detail/movie/${credit.id}`}>
+                        <div className='group relative aspect-[3/4] rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50'>
+                          {credit.poster_path ? (
+                            <Image
+                              src={`https://image.tmdb.org/t/p/w500${credit.poster_path}`}
+                              alt={credit.title ?? 'Movie poster'}
+                              fill
+                              className='object-cover'
+                            />
+                          ) : (
+                            <div className='bg-gray-800 w-full h-full flex items-center justify-center'>
+                              <span className='text-gray-500 text-sm'>No Photo</span>
+                            </div>
+                          )}
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity'></div>
+                          <div className='absolute bottom-0 left-0 w-full p-3 opacity-0 group-hover:opacity-100 transition-opacity'>
+                            <p className='font-bold text-white truncate'>{credit.title}</p>
+                            <p className='text-gray-300 text-sm truncate'>{credit.character}</p>
                           </div>
-                        )}
-                        <div className='absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity'></div>
-                        <div className='absolute bottom-0 left-0 w-full p-3 opacity-0 group-hover:opacity-100 transition-opacity'>
-                          <p className='font-bold text-white truncate'>
-                            {credit.title ?? credit.name}
-                          </p>
-                          <p className='text-gray-300 text-sm truncate'>{credit.character}</p>
                         </div>
-                      </div>
-                    </Link>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className='left-2 bg-black/60 border-white/10 text-white hover:bg-black/80 hover:text-white hover:border-white/30 backdrop-blur-sm transition-all duration-200 w-10 h-10 disabled:opacity-30' />
-              <CarouselNext className='right-2 bg-black/60 border-white/10 text-white hover:bg-black/80 hover:text-white hover:border-white/30 backdrop-blur-sm transition-all duration-200 w-10 h-10 disabled:opacity-30' />
-            </Carousel>
-          ) : (
-            <p>No credits available.</p>
+                      </Link>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className='left-4 bg-black/70 border-white/20 text-white hover:bg-black/90 hover:text-white hover:border-white/40 backdrop-blur-sm z-40' />
+                <CarouselNext className='right-4 bg-black/70 border-white/20 text-white hover:bg-black/90 hover:text-white hover:border-white/40 backdrop-blur-sm z-40' />
+              </Carousel>
+            </div>
+          )}
+
+          {/* TV Shows Section */}
+          {tvCredits.length > 0 && (
+            <div className='space-y-4 pb-10'>
+              <h2 className='text-2xl font-bold text-white'>TV Shows</h2>
+              <Carousel opts={{ align: 'start', slidesToScroll: 2 }} className='w-full'>
+                <CarouselContent className='-ml-2 md:-ml-4'>
+                  {tvCredits.map((credit, index) => (
+                    <CarouselItem
+                      key={`${credit.id}-${index}-tv`}
+                      className='basis-auto md:basis-1/6 lg:basis-1/8'
+                    >
+                      <Link href={`/detail/tv/${credit.id}`}>
+                        <div className='group relative aspect-[3/4] rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50'>
+                          {credit.poster_path ? (
+                            <Image
+                              src={`https://image.tmdb.org/t/p/w500${credit.poster_path}`}
+                              alt={credit.name ?? 'TV poster'}
+                              fill
+                              className='object-cover'
+                            />
+                          ) : (
+                            <div className='bg-gray-800 w-full h-full flex items-center justify-center'>
+                              <span className='text-gray-500 text-sm'>No Photo</span>
+                            </div>
+                          )}
+                          <div className='absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity'></div>
+                          <div className='absolute bottom-0 left-0 w-full p-3 opacity-0 group-hover:opacity-100 transition-opacity'>
+                            <p className='font-bold text-white truncate'>{credit.name}</p>
+                            <p className='text-gray-300 text-sm truncate'>{credit.character}</p>
+                          </div>
+                        </div>
+                      </Link>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className='left-4 bg-black/70 border-white/20 text-white hover:bg-black/90 hover:text-white hover:border-white/40 backdrop-blur-sm z-40' />
+                <CarouselNext className='right-4 bg-black/70 border-white/20 text-white hover:bg-black/90 hover:text-white hover:border-white/40 backdrop-blur-sm z-40' />
+              </Carousel>
+            </div>
           )}
         </div>
       </div>
