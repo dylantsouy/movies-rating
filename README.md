@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎮 Movies Rating
 
-## Getting Started
+A modern, responsive movie information platform built with **Next.js** and **TMDB API**, inspired by streaming platforms like Netflix. Explore trending movies, cast details, and actor filmographies with rich UI and smooth UX.
 
-First, run the development server:
+---
+
+## 📝 Table of Contents
+
+- [About](#about)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Development Guidelines](#development-guidelines)
+- [Code Quality & Formatting](#code-quality--formatting)
+- [Pre-commit Hooks](#pre-commit-hooks)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Authors](#authors)
+
+---
+
+## 😮 About <a name="about"></a>
+
+**Movies Rating** is a full-featured movie browsing platform where users can:
+
+- Discover trending and top-rated movies via **TMDB API**
+- View detailed cast information and actor filmographies
+- Experience a responsive Netflix-style UI using shadcn and Tailwind CSS
+- Enjoy fast data loading with API caching powered by React Query
+
+The project emphasizes **performance**, **code quality**, and **modern web practices**.
+
+---
+
+## ⛏️ Tech Stack <a name="tech-stack"></a>
+
+| Category          | Stack                                                                         |
+| ----------------- | ----------------------------------------------------------------------------- |
+| **Framework**     | [Next.js (App Router)](https://nextjs.org/)                                   |
+| **Language**      | [TypeScript](https://www.typescriptlang.org/)                                 |
+| **Styling**       | [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/) |
+| **UI Components** | [Lucide Icons](https://lucide.dev/)                                           |
+| **State / Data**  | [React Query](https://tanstack.com/query)                                     |
+| **Lint / Format** | ESLint, Prettier, TypeScript ESLint, Commitizen                               |
+| **Deployment**    | [Vercel](https://vercel.com/)                                                 |
+
+---
+
+## 🚀 Getting Started <a name="getting-started"></a>
+
+### 1. Clone the project
+
+```bash
+git clone https://github.com/dylantsouy/movies-rating.git
+cd movies-rating
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠 Development Guidelines <a name="development-guidelines"></a>
 
-## Learn More
+- ✅ Use functional components and TypeScript types
+- 📦 Group reusable components under `src/components/`
+- 📁 Organize API functions under `src/lib/utils/`
+- 💡 Follow the import alias convention: `@/` → `src/`
+- 🔠 Keep UI components presentational and pure
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📏 Code Quality & Formatting <a name="code-quality--formatting"></a>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Linting**: ESLint with TypeScript, React, React Hooks, import/order, A11y, and Prettier plugins
+- **Formatting**: Prettier with custom configuration (2-space indent, single quote, trailing commas off)
+- **Import Order**: Enforced with pathGroups (`react`, `next/**`, `@/**`, `~/**`)
 
-## Deploy on Vercel
+### Commands
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run lint        # Lint all files
+npm run lint:fix    # Auto-fix lint issues
+npm run format      # Format files with Prettier
+npm run check-types # Type checking
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧪 Pre-commit Hooks <a name="pre-commit-hooks"></a>
+
+- **Husky** + **lint-staged** for automatic lint/format on commit
+- **Commitizen** + custom adapter for conventional commit messages
+- **Commitlint** to enforce commit message structure
+
+### Sample Commit
+
+```
+feat(auth): add login page layout
+
+- Implemented login/logout flow with JWT authentication
+- Optimized for mobile-first experience
+
+BREAKING CHANGE: N/A
+Closes: N/A
+Refs: N/A
+Signed-off-by: Dylan Tsou <bear817005@gmail.com>
+```
+
+---
+
+## 🚀 Deployment <a name="deployment"></a>
+
+This project is ready to deploy on [Vercel](https://vercel.com/) with zero config. Just connect your GitHub repo and deploy!
+
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 🤝 Contributing <a name="contributing"></a>
+
+PRs and Issues are welcome. Please follow the code style and use `npm run lint && npm run format` before pushing.
+
+---
+
+## 👨‍💼 Authors <a name="authors"></a>
+
+- **Dylan Zou** – [GitHub @dylantsouy](https://github.com/dylantsouy)
+
+---
