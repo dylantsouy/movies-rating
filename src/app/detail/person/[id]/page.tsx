@@ -53,7 +53,6 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
   });
 
   const movieCredits = creditsQuery.data?.filter((credit) => credit.media_type === 'movie') ?? [];
-
   const tvCredits = creditsQuery.data?.filter((credit) => credit.media_type === 'tv') ?? [];
 
   const formatBirthDate = (birthday?: string) => {
@@ -75,7 +74,54 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   if (castQuery.isLoading || creditsQuery.isLoading) {
-    return <div className='min-h-screen bg-black text-white'>Loading...</div>;
+    return (
+      <div className='min-h-screen bg-black text-white pb-20'>
+        <div className='sticky top-0 bg-black z-50 py-4 px-6 border-b border-gray-800'>
+          <Button variant='ghost' className='text-white hover:bg-gray-800 animate-pulse'>
+            <div className='h-5 w-5 mr-2 bg-gray-700 rounded'></div>
+            <div className='h-4 w-16 bg-gray-700 rounded'></div>
+          </Button>
+        </div>
+
+        <div className='space-y-8 px-6 pt-6'>
+          {/* Person Info Skeleton */}
+          <div className='flex flex-col md:flex-row gap-8 bg-gray-900 rounded-xl p-6 shadow-lg'>
+            <div className='w-full md:w-1/3 relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-800 animate-pulse'></div>
+            <div className='w-full md:w-2/3 space-y-4'>
+              <div className='h-8 w-50 bg-gray-800 rounded animate-pulse mb-6'></div>
+              <div className='h-6 w-2/3 bg-gray-800 rounded animate-pulse'></div>
+              <div className='h-6 w-36 bg-gray-800 rounded animate-pulse'></div>
+              <div className='space-y-2'>
+                <div className='h-6 w-30 bg-gray-800 rounded animate-pulse mb-6'></div>
+                <div className='h-4 w-full bg-gray-800 rounded animate-pulse mt-1'></div>
+                <div className='h-4 w-4/5 bg-gray-800 rounded animate-pulse mt-3'></div>
+                <div className='h-4 w-3/4 bg-gray-800 rounded animate-pulse mt-3'></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Movies Skeleton */}
+          <div className='space-y-4'>
+            <div className='h-6 w-1/4 bg-gray-800 rounded animate-pulse'></div>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'>
+              {Array.from({ length: 6 }, (_, i) => (
+                <div key={i} className='aspect-[3/4] bg-gray-800 rounded-lg animate-pulse'></div>
+              ))}
+            </div>
+          </div>
+
+          {/* TV Shows Skeleton */}
+          <div className='space-y-4'>
+            <div className='h-6 w-1/4 bg-gray-800 rounded animate-pulse'></div>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'>
+              {Array.from({ length: 6 }, (_, i) => (
+                <div key={i} className='aspect-[3/4] bg-gray-800 rounded-lg animate-pulse'></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -105,21 +151,36 @@ const PersonDetailPage = ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
           <div className='w-full md:w-2/3 space-y-4 text-gray-300'>
             <h1 className='text-3xl font-bold tracking-tight text-white'>{castQuery.data?.name}</h1>
-            {castQuery.data?.birthday && (
-              <p>
-                <span className='font-semibold'>Birthday:</span> {castQuery.data.birthday} (
-                {formatBirthDate(castQuery.data.birthday)})
-              </p>
-            )}
-            {castQuery.data?.place_of_birth && (
-              <p>
-                <span className='font-semibold'>Place of Birth:</span>{' '}
-                {castQuery.data.place_of_birth}
-              </p>
-            )}
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              {castQuery.data?.birthday && (
+                <p>
+                  <span className='font-semibold'>Birthday:</span> {castQuery.data.birthday} (
+                  {formatBirthDate(castQuery.data.birthday)})
+                </p>
+              )}
+              {castQuery.data?.place_of_birth && (
+                <p>
+                  <span className='font-semibold'>Place of Birth:</span>{' '}
+                  {castQuery.data.place_of_birth}
+                </p>
+              )}
+              {castQuery.data?.known_for_department && (
+                <p>
+                  <span className='font-semibold'>Known For:</span>{' '}
+                  {castQuery.data.known_for_department}
+                </p>
+              )}
+              {castQuery.data?.deathday && (
+                <p>
+                  <span className='font-semibold'>Date of Death:</span> {castQuery.data.deathday}
+                </p>
+              )}
+            </div>
+
             {castQuery.data?.biography ? (
               <div>
-                <h2 className='text-xl font-bold mb-3'>Biography</h2>
+                <h2 className='text-xl font-bold mb-3 text-white'>Biography</h2>
                 <p className='leading-relaxed'>{castQuery.data.biography}</p>
               </div>
             ) : (

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star } from 'lucide-react';
@@ -27,14 +28,40 @@ interface MediaSectionProps {
   icon?: React.ReactNode;
   mediaType: 'movie' | 'tv';
 }
-
 const MediaTop = ({ title, items, genres, icon, mediaType }: MediaSectionProps) => {
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+  const [loadingImages, setLoadingImages] = useState<Set<number>>(new Set());
+
   if (!items || items.length === 0) return null;
 
   const getGenreNames = (genreIds: number[]) => {
     if (!genres) return [];
 
     return genreIds.map((id) => genres.find((g) => g.id === id)?.name).filter(Boolean) as string[];
+  };
+
+  const handleImageError = (itemId: number) => {
+    setImageErrors((prev) => new Set(prev).add(itemId));
+
+    setLoadingImages((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(itemId);
+
+      return newSet;
+    });
+  };
+
+  const handleImageLoad = (itemId: number) => {
+    setLoadingImages((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(itemId);
+
+      return newSet;
+    });
+  };
+
+  const handleImageLoadStart = (itemId: number) => {
+    setLoadingImages((prev) => new Set(prev).add(itemId));
   };
 
   return (
@@ -71,13 +98,40 @@ const MediaTop = ({ title, items, genres, icon, mediaType }: MediaSectionProps) 
 
                 <Link href={`/detail/${mediaType}/${item.id}`}>
                   <div className='group relative aspect-[2/3] cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:ring-offset-2 focus:ring-offset-black'>
-                    <Image
-                      src={`${IMAGE_BASE_URL}${item.poster_path}`}
-                      alt={item.title ?? item.name ?? ''}
-                      fill
-                      className='object-cover rounded-xl transition-transform duration-300 group-hover:scale-110 shadow-lg'
-                      sizes='(max-width: 768px) 33vw, 16vw'
-                    />
+                    {loadingImages.has(item.id) && (
+                      <div className='absolute inset-0 bg-gray-800 rounded-xl flex items-center justify-center'>
+                        <div className='w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin'></div>
+                      </div>
+                    )}
+
+                    {imageErrors.has(item.id) ? (
+                      <div className='absolute inset-0 bg-gray-800 rounded-xl flex flex-col items-center justify-center text-gray-400'>
+                        <div className='w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center mb-2'>
+                          <svg className='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'>
+                            <path
+                              fillRule='evenodd'
+                              d='M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z'
+                              clipRule='evenodd'
+                            />
+                          </svg>
+                        </div>
+                        <span className='text-xs text-center px-2'>Loading Failed</span>
+                      </div>
+                    ) : (
+                      <Image
+                        src={`${IMAGE_BASE_URL}${item.poster_path}`}
+                        alt={item.title ?? item.name ?? ''}
+                        fill
+                        className='object-cover rounded-xl transition-transform duration-300 group-hover:scale-110 shadow-lg'
+                        sizes='(max-width: 768px) 33vw, 16vw'
+                        priority={index < 6}
+                        placeholder='blur'
+                        blurDataURL='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k='
+                        onError={() => handleImageError(item.id)}
+                        onLoad={() => handleImageLoad(item.id)}
+                        onLoadStart={() => handleImageLoadStart(item.id)}
+                      />
+                    )}
 
                     <div className='absolute bottom-0 left-0 right-0 p-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300'>
                       <h4 className='font-bold text-sm mb-1 line-clamp-2 text-white'>

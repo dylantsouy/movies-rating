@@ -11,8 +11,12 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Movie App',
-  description: 'Netflix style movie showcase'
+  title: 'Movie Rating',
+  description: 'Movie Rating App',
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/favicon.svg'
+  }
 };
 
 const RootLayout = ({

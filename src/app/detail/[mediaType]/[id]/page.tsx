@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/carousel';
 import StarRating from '@/components/star-rating';
 
-import type { Cast, MediaItem, Review } from '@/types/tmdb';
+import type { Cast, MediaItem, Review, Video } from '@/types/tmdb';
 import type { Genre } from '@/lib/utils';
 
 type MediaType = 'movie' | 'tv';
@@ -66,6 +66,17 @@ const MovieDetailPage = ({ params }: { params: Promise<{ mediaType: MediaType; i
     return data.results;
   };
 
+  const fetchVideos = async () => {
+    const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+    const { data } = await axios.get<{ results: Video[] }>(
+      `https://api.themoviedb.org/3/${mediaType}/${mediaId}/videos?api_key=${apiKey}&language=en-US`
+    );
+
+    return data.results.filter(
+      (video) => video.site === 'YouTube' && (video.type === 'Trailer' || video.type === 'Teaser')
+    );
+  };
+
   const detailQuery = useQuery<MediaItem>({
     queryKey: ['detail', mediaType, mediaId],
     queryFn: fetchMediaDetail
@@ -79,6 +90,11 @@ const MovieDetailPage = ({ params }: { params: Promise<{ mediaType: MediaType; i
   const reviewQuery = useQuery<Review[]>({
     queryKey: ['reviews', mediaType, mediaId],
     queryFn: fetchReviews
+  });
+
+  const videosQuery = useQuery<Video[]>({
+    queryKey: ['videos', mediaType, mediaId],
+    queryFn: fetchVideos
   });
 
   const getGenreNames = (genreIds: number[]): string => {
@@ -100,15 +116,108 @@ const MovieDetailPage = ({ params }: { params: Promise<{ mediaType: MediaType; i
     '-'
   )[0];
 
-  if (detailQuery.isLoading || castQuery.isLoading || reviewQuery.isLoading || !genres) {
-    return <div className='min-h-screen bg-black text-white'>Loading...</div>;
+  if (
+    detailQuery.isLoading ||
+    castQuery.isLoading ||
+    reviewQuery.isLoading ||
+    videosQuery.isLoading ||
+    !genres
+  ) {
+    return (
+      <div className='min-h-screen bg-black text-white pb-20'>
+        <div className='sticky top-0 bg-black z-50 py-4 px-6 border-b border-gray-800'>
+          <Button variant='ghost' className='text-white hover:bg-gray-800 animate-pulse'>
+            <div className='h-5 w-5 mr-2 bg-gray-700 rounded'></div>
+            <div className='h-4 w-16 bg-gray-700 rounded'></div>
+          </Button>
+        </div>
+
+        <div className='space-y-8 px-6 pt-6'>
+          {/* Skeleton for main content */}
+          <div className='flex flex-col md:flex-row gap-8 bg-gray-900 rounded-xl p-6 shadow-lg'>
+            <div className='w-full md:w-1/3 relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-800 animate-pulse'></div>
+
+            <div className='w-full md:w-2/3 space-y-4'>
+              <div className='space-y-2'>
+                <div className='h-8 w-60 bg-gray-800 rounded animate-pulse'></div>
+                <div className='flex gap-2 mt-4 items-center'>
+                  <span className='text-gray-800'>•</span>
+                  <div className='h-4 w-15 bg-gray-800 rounded animate-pulse'></div>
+                </div>
+                <div className='flex gap-2 mt-5'>
+                  <div className='h-6 w-25 bg-gray-800 rounded animate-pulse'></div>
+                  <div className='h-6 w-12 bg-gray-800 rounded animate-pulse'></div>
+                </div>
+                <div className='flex gap-2 mt-5'>
+                  <div className='h-6 w-25 bg-gray-800 rounded animate-pulse'></div>
+                  <div className='h-6 w-25 bg-gray-800 rounded animate-pulse'></div>
+                </div>
+              </div>
+
+              <div className='pt-4'>
+                <div className='h-6 w-22 bg-gray-800 rounded animate-pulse mb-3'></div>
+                <div className='mt-2 h-5 w-full bg-gray-800 rounded animate-pulse mb-2'></div>
+                <div className='mt-2 h-5 w-full bg-gray-800 rounded animate-pulse mb-2'></div>
+                <div className='mt-2 h-5 w-full bg-gray-800 rounded animate-pulse mb-2'></div>
+                <div className='mt-2 h-5 w-full bg-gray-800 rounded animate-pulse mb-2'></div>
+                <div className='mt-2 h-5 w-full bg-gray-800 rounded animate-pulse mb-2'></div>
+                <div className='mt-2 h-5 w-3/4 bg-gray-800 rounded animate-pulse'></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Skeleton for cast */}
+          <div className='space-y-4'>
+            <div className='h-6 w-1/4 bg-gray-800 rounded animate-pulse'></div>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4'>
+              {Array.from({ length: 6 }, (_, i) => (
+                <div key={i} className='aspect-[3/4] bg-gray-800 rounded-lg animate-pulse'></div>
+              ))}
+            </div>
+          </div>
+
+          {/* Skeleton for trailers */}
+          <div className='space-y-4'>
+            <div className='h-6 w-1/4 bg-gray-800 rounded animate-pulse'></div>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              {Array.from({ length: 2 }, (_, i) => (
+                <div key={i} className='aspect-video bg-gray-800 rounded-lg animate-pulse'></div>
+              ))}
+            </div>
+          </div>
+
+          {/* Skeleton for reviews */}
+          <div className='space-y-4'>
+            <div className='h-6 w-1/4 bg-gray-800 rounded animate-pulse'></div>
+            <div className='space-y-4'>
+              {Array.from({ length: 2 }, (_, i) => (
+                <div
+                  key={i}
+                  className='bg-gray-900 rounded-xl p-4 shadow-lg border border-gray-800'
+                >
+                  <div className='flex items-center gap-4 mb-4'>
+                    <div className='bg-gray-800 rounded-full w-10 h-10 animate-pulse'></div>
+                    <div className='h-4 w-1/4 bg-gray-800 rounded animate-pulse'></div>
+                  </div>
+                  <div className='space-y-2'>
+                    <div className='h-4 w-full bg-gray-800 rounded animate-pulse'></div>
+                    <div className='h-4 w-4/5 bg-gray-800 rounded animate-pulse'></div>
+                    <div className='h-4 w-3/4 bg-gray-800 rounded animate-pulse'></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className='min-h-screen bg-black text-white pb-20'>
       <div className='sticky top-0 bg-black z-50 py-4 px-6 border-b border-gray-800'>
-        <Link href='/'>
-          <Button variant='ghost' className='text-white hover:bg-gray-800'>
+        <Link href={`/${mediaType === 'movie' ? 'movies' : 'tv-shows'}`}>
+          <Button variant='ghost' className='text-white'>
             <ArrowLeft className='h-5 w-5 mr-2' />
             Back
           </Button>
@@ -140,18 +249,18 @@ const MovieDetailPage = ({ params }: { params: Promise<{ mediaType: MediaType; i
                   {getGenreNames(detailQuery.data?.genre_ids ?? [])}
                 </div>
                 {releaseYear && (
-                  <>
+                  <div className='flex items-center gap-2'>
                     <span className='text-gray-500'>•</span>
                     <div className='text-sm text-gray-300'>{releaseYear}</div>
-                  </>
+                  </div>
                 )}
                 {detailQuery.data?.runtime && (
-                  <>
+                  <div className='flex items-center gap-2'>
                     <span className='text-gray-500'>•</span>
                     <div className='text-sm text-gray-300'>
                       {Math.floor(detailQuery.data.runtime / 60)}h {detailQuery.data.runtime % 60}m
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
 
@@ -186,6 +295,30 @@ const MovieDetailPage = ({ params }: { params: Promise<{ mediaType: MediaType; i
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Trailers Section */}
+        <div className='space-y-4'>
+          <h2 className='text-2xl font-bold text-white'>Trailers & Videos</h2>
+          {videosQuery.data && videosQuery.data.length > 0 ? (
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              {videosQuery.data.slice(0, 2).map((video) => (
+                <div key={video.id} className='aspect-video w-full'>
+                  <iframe
+                    src={`https://www.youtube.com/embed/${video.key}`}
+                    title={video.name}
+                    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                    allowFullScreen
+                    className='w-full h-full rounded-lg'
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className='text-center py-8 text-gray-400 bg-gray-900 rounded-lg'>
+              No trailers available
+            </div>
+          )}
         </div>
 
         <div className='space-y-4'>
