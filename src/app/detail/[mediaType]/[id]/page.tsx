@@ -216,7 +216,7 @@ const MovieDetailPage = ({ params }: { params: Promise<{ mediaType: MediaType; i
   return (
     <div className='min-h-screen bg-black text-white pb-20'>
       <div className='sticky top-0 bg-black z-50 py-4 px-6 border-b border-gray-800'>
-        <Link href={`/${mediaType === 'movie' ? 'movies' : 'tv-shows'}`}>
+        <Link href={`/${mediaType === 'movie' ? 'movie' : 'tv'}`}>
           <Button variant='ghost' className='text-white'>
             <ArrowLeft className='h-5 w-5 mr-2' />
             Back

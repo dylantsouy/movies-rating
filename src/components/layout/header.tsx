@@ -10,8 +10,8 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 const Header = () => {
   const pathname = usePathname();
 
-  const isMoviesPage = pathname.startsWith('/movies');
-  const isTvPage = pathname.startsWith('/tv-shows');
+  const isMoviesPage = pathname.includes('/movie');
+  const isTvPage = pathname.includes('/tv');
 
   return (
     <header className='bg-black/95 backdrop-blur-md border-b border-gray-800/50 fixed w-full z-50 top-0 shadow-2xl'>
@@ -41,7 +41,7 @@ const Header = () => {
               }
             `}
           >
-            <Link href='/movies' className='flex items-center space-x-2'>
+            <Link href='/movie' className='flex items-center space-x-2'>
               <Film className='w-4 h-4' />
               <span>Movies</span>
               {isMoviesPage && (
@@ -62,7 +62,7 @@ const Header = () => {
               }
             `}
           >
-            <Link href='/tv-shows' className='flex items-center space-x-2'>
+            <Link href='/tv' className='flex items-center space-x-2'>
               <Tv className='w-4 h-4' />
               <span>TV Shows</span>
               {isTvPage && (
@@ -101,7 +101,7 @@ const Header = () => {
                     }
                   `}
                 >
-                  <Link href='/movies' className='flex items-center space-x-3'>
+                  <Link href='/movie' className='flex items-center space-x-3'>
                     <Film className='w-5 h-5' />
                     <span className='text-lg'>Movies</span>
                   </Link>
@@ -119,7 +119,7 @@ const Header = () => {
                     }
                   `}
                 >
-                  <Link href='/tv-shows' className='flex items-center space-x-3'>
+                  <Link href='/tv' className='flex items-center space-x-3'>
                     <Tv className='w-5 h-5' />
                     <span className='text-lg'>TV Shows</span>
                   </Link>
